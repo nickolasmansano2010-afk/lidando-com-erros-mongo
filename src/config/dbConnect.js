@@ -1,6 +1,22 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-mongoose.connect("mongodb+srv://nickolas:nickname013@cluster0.1fv2md0.mongodb.net/?appName=Cluster0");
+const connectDb = async () => {
+  try {
+    const mongoUri = process.env.MONGODB_URI;
+
+    if (!mongoUri) {
+      throw new Error("MONGODB_URI não está definida no .env");
+    }
+
+    await mongoose.connect(mongoUri);
+    console.log("✅ Conectado ao MongoDB com sucesso");
+  } catch (erro) {
+    console.error("❌ Erro ao conectar ao MongoDB:", erro.message);
+    process.exit(1);
+  }
+};
+
+connectDb();
 
 let db = mongoose.connection;
 
