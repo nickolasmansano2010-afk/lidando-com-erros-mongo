@@ -12,10 +12,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
     "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^4.17.3",
+    "mongodb": "4.1",
     "mongoose": "^6.2.6"
   }
 }
