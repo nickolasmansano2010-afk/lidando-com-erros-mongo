@@ -2,17 +2,16 @@ import livros from "../models/Livro.js";
 
 class LivroController {
 
-  static listarLivros = async (req, res) => {
+  static listarLivros = async (req, res, next) => {
     try {
       const livrosResultado = await livros.find().populate("autor");
       res.status(200).json(livrosResultado);
     } catch (erro) {
-      console.error(erro);
-      res.status(500).json({ message: "Erro ao listar livros." });
+      next(erro);
     }
   };
 
-  static listarLivroPorId = async (req, res) => {
+  static listarLivroPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
       const livroResultado = await livros.findById(id).populate("autor", "nome");
@@ -23,16 +22,18 @@ class LivroController {
 
       res.status(200).json(livroResultado);
     } catch (erro) {
+      next(erro); 
       console.error(erro);
       res.status(400).json({ message: "Id inválido." });
     }
   };
 
-  static cadastrarLivro = async (req, res) => {
+  static cadastrarLivro = async (req, res, next) => {
     try {
       const livroResultado = await livros.create(req.body);
       res.status(201).json(livroResultado);
     } catch (erro) {
+      next(erro);
       if (erro.name === "ValidationError") {
         return res.status(400).json({ message: `Erro de validação: ${erro.message}` });
       }
@@ -41,7 +42,7 @@ class LivroController {
     }
   };
 
-  static atualizarLivro = async (req, res) => {
+  static atualizarLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
       const livroAtualizado = await livros.findByIdAndUpdate(id, req.body, { new: true });
@@ -52,12 +53,11 @@ class LivroController {
 
       res.status(200).json({ message: "Livro atualizado com sucesso", livro: livroAtualizado });
     } catch (erro) {
-      console.error(erro);
-      res.status(400).json({ message: "Id inválido." });
+      next(erro);
     }
   };
 
-  static excluirLivro = async (req, res) => {
+  static excluirLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
       const livroRemovido = await livros.findByIdAndDelete(id);
@@ -68,12 +68,11 @@ class LivroController {
 
       res.status(200).json({ message: "Livro removido com sucesso" });
     } catch (erro) {
-      console.error(erro);
-      res.status(400).json({ message: "Id inválido." });
+      next(erro);
     }
   };
 
-  static listarLivroPorEditora = async (req, res) => {
+  static listarLivroPorEditora = async (req, res, next) => {
     try {
       const editora = req.query.editora;
 
@@ -84,8 +83,7 @@ class LivroController {
       const livrosResultado = await livros.find({ editora });
       res.status(200).json(livrosResultado);
     } catch (erro) {
-      console.error(erro);
-      res.status(500).json({ message: "Erro ao listar livros." });
+      next(erro);
     }
   };
 

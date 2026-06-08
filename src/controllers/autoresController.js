@@ -2,18 +2,18 @@ import autores from "../models/Autor.js";
 
 class AutorController {
 
-  static listarAutores = async(req, res) => {
+  static listarAutores = async(req, res, next) => {
     try {
       const autoresResultado = await autores.find();
 
       res.status(200).json(autoresResultado);
       
     } catch (erro) {
-      res.status(500).json({ message: "Erro interno no servidor" });
+      next(erro);
     }
   };
 
-  static listarAutorPorId = async (req, res) => {
+  static listarAutorPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
       const autorResultado = await autores.findById(id);
@@ -24,27 +24,25 @@ class AutorController {
 
       res.status(200).json(autorResultado);
     } catch (erro) {
-      console.error(erro);
-      res.status(400).json({ message: "Id inválido." });
+     next(erro);
     }
   };
   
   
-  static cadastrarAutor = async (req, res) => {
+  static cadastrarAutor = async (req, res, next) => {
     try {
-      const autorResultado = await autores.create(req.body);
-      res.status(201).json(autorResultado);
+     let autor = new autores(req.body);
+
+     const autorResultado = await autor.save();
+
+      res.status(201).send(autorResultado.toJSON());
     } catch (erro) {
-      if (erro.name === "ValidationError") {
-        return res.status(400).json({ message: `Erro de validação: ${erro.message}` });
-      }
-      console.error(erro);
-      res.status(500).json({ message: "Erro ao cadastrar Autor." });
+     next(erro);
     }
   };
   
 
-  static atualizarAutor = async (req, res) => {
+  static atualizarAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
   
@@ -52,7 +50,7 @@ class AutorController {
   
       res.status(200).send({message: "Autor atualizado com sucesso"});
     } catch (erro) {
-      res.status(500).send({message: erro.message});
+      next(erro);
     }
   };
   
@@ -64,7 +62,7 @@ class AutorController {
   
       res.status(200).send({message: "Autor removido com sucesso"});
     } catch (erro) {
-      res.status(500).send({message: erro.message});
+      next(erro);
     }
   };
   
