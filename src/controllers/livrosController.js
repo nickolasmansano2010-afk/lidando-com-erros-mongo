@@ -22,9 +22,7 @@ class LivroController {
 
       res.status(200).json(livroResultado);
     } catch (erro) {
-      next(erro); 
-      console.error(erro);
-      res.status(400).json({ message: "Id inválido." });
+      next(erro);
     }
   };
 
@@ -34,11 +32,6 @@ class LivroController {
       res.status(201).json(livroResultado);
     } catch (erro) {
       next(erro);
-      if (erro.name === "ValidationError") {
-        return res.status(400).json({ message: `Erro de validação: ${erro.message}` });
-      }
-      console.error(erro);
-      res.status(500).json({ message: "Erro ao cadastrar livro." });
     }
   };
 

@@ -31,13 +31,11 @@ class AutorController {
   
   static cadastrarAutor = async (req, res, next) => {
     try {
-     let autor = new autores(req.body);
-
-     const autorResultado = await autor.save();
+      const autorResultado = await autores.create(req.body);
 
       res.status(201).send(autorResultado.toJSON());
     } catch (erro) {
-     next(erro);
+      next(erro);
     }
   };
   
@@ -54,12 +52,12 @@ class AutorController {
     }
   };
   
-  static excluirAutor = async (req, res) => {
+  static excluirAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
-  
+
       await autores.findByIdAndDelete(id);
-  
+
       res.status(200).send({message: "Autor removido com sucesso"});
     } catch (erro) {
       next(erro);
