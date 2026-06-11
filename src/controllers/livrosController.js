@@ -11,16 +11,19 @@ class LivroController {
     }
   };
 
-  static listarLivroPorId = async (req, res, next) => {
+    static listarLivroPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const livroResultado = await livros.findById(id).populate("autor", "nome");
 
-      if (!livroResultado) {
-        return res.status(404).json({ message: "Livro não localizado." });
+      const livroResultado = await livros.findById(id)
+        .populate("autor", "nome")
+        .exec();
+
+      if (livroResultado !== null) {
+        res.status(200).send(livroResultado);
+      } else {
+        next(new NaoEncontrado("Id do livro não localizado."));
       }
-
-      res.status(200).json(livroResultado);
     } catch (erro) {
       next(erro);
     }
@@ -35,31 +38,33 @@ class LivroController {
     }
   };
 
-  static atualizarLivro = async (req, res, next) => {
+    static atualizarLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const livroAtualizado = await livros.findByIdAndUpdate(id, req.body, { new: true });
 
-      if (!livroAtualizado) {
-        return res.status(404).json({ message: "Livro não localizado." });
+      const livroResultado = await livros.findByIdAndUpdate(id, {$set: req.body});
+
+      if (livroResultado !== null) {
+        res.status(200).send({message: "Livro atualizado com sucesso"});
+      } else {
+        next(new NaoEncontrado("Id do livro não localizado."));
       }
-
-      res.status(200).json({ message: "Livro atualizado com sucesso", livro: livroAtualizado });
     } catch (erro) {
       next(erro);
     }
   };
 
-  static excluirLivro = async (req, res, next) => {
+    static excluirLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const livroRemovido = await livros.findByIdAndDelete(id);
 
-      if (!livroRemovido) {
-        return res.status(404).json({ message: "Livro não localizado." });
+      const livroResultado = await livros.findByIdAndDelete(id);
+
+      if (livroResultado !== null) {
+        res.status(200).send({message: "Livro removido com sucesso"});
+      } else {
+        next(new NaoEncontrado("Id do livro não localizado."));
       }
-
-      res.status(200).json({ message: "Livro removido com sucesso" });
     } catch (erro) {
       next(erro);
     }

@@ -1,3 +1,4 @@
+import naoEncontrado from "../erros/naoEncontrado.js";
 import autores from "../models/Autor.js";
 
 class AutorController {
@@ -13,18 +14,19 @@ class AutorController {
     }
   };
 
-  static listarAutorPorId = async (req, res, next) => {
+   static listarAutorPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
+
       const autorResultado = await autores.findById(id);
 
-      if (!autorResultado) {
-        return res.status(404).json({ message: "Autor não localizado." });
+      if (autorResultado !== null) {
+        res.status(200).send(autorResultado);
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
       }
-
-      res.status(200).json(autorResultado);
     } catch (erro) {
-     next(erro);
+      next(erro);
     }
   };
   
@@ -40,25 +42,34 @@ class AutorController {
   };
   
 
-  static atualizarAutor = async (req, res, next) => {
+    static atualizarAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
-  
-      await autores.findByIdAndUpdate(id, {$set: req.body});
-  
-      res.status(200).send({message: "Autor atualizado com sucesso"});
+
+      const autorResultado = await autores.findByIdAndUpdate(id, {$set: req.body});
+
+      if (autorResultado !== null) {
+        res.status(200).send({message: "Autor atualizado com sucesso"});
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      }
+
     } catch (erro) {
       next(erro);
     }
   };
   
-  static excluirAutor = async (req, res, next) => {
+    static excluirAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
 
-      await autores.findByIdAndDelete(id);
+      const autorResultado = await autores.findByIdAndDelete(id);
 
-      res.status(200).send({message: "Autor removido com sucesso"});
+      if (autorResultado !== null) {
+        res.status(200).send({message: "Autor removido com sucesso"});
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      }
     } catch (erro) {
       next(erro);
     }
